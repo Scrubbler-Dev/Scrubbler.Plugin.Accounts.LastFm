@@ -64,7 +64,7 @@ public class LastFmAccountPlugin : PluginBase.Plugin.PluginBase, IAccountPlugin,
 
     public event EventHandler? CurrentScrobbleCountChanged;
 
-    public int ScrobbleLimit => 3000;
+    public int ScrobbleLimit => 600;
 
     public int CurrentScrobbleCount
     {
@@ -176,6 +176,7 @@ public class LastFmAccountPlugin : PluginBase.Plugin.PluginBase, IAccountPlugin,
             _lastfmClient = new LastfmClient(_apiKeyStorage.ApiKey, _apiKeyStorage.ApiSecret);
             _lastfmClient.SetSessionKey(_sessionKey);
             _logService.Debug($"Finished OAuth flow. Logged in as {AccountId}");
+            await SaveAsync();
         }
         catch (Exception ex)
         {
@@ -187,11 +188,11 @@ public class LastFmAccountPlugin : PluginBase.Plugin.PluginBase, IAccountPlugin,
     /// Logs out the Last.fm account and clears authentication state.
     /// </summary>
     /// <returns>A task that represents the asynchronous logout operation.</returns>
-    public Task LogoutAsync()
+    public async Task LogoutAsync()
     {
         AccountId = null;
         _sessionKey = null;
-        return Task.CompletedTask;
+        await SaveAsync();
     }
 
     /// <summary>
